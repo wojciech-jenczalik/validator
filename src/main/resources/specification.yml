@@ -1,0 +1,43 @@
+coapi:
+  required: true
+  type: string
+
+info:
+  required: true
+  type: object
+  children:
+    title:
+      required: true
+      type: string
+    description:
+      required: false
+      type: string
+    termsOfService:
+      required: false
+      type: string
+    contact:
+      required: false
+      type: object
+      children:
+        name:
+          required: false
+          type: string
+        url:
+          required: false
+          type: string
+        email:
+          required: false
+          type: string
+    licence:
+      required: false
+      type: object
+      children:
+        name:
+          required: true
+          type: string
+        url:
+          required: false
+          type: string
+    version:
+      required: true
+      type: string
