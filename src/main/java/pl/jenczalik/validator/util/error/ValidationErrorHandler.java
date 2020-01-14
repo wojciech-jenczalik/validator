@@ -7,7 +7,7 @@ import pl.jenczalik.validator.model.ValidationResult;
 @Component
 public class ValidationErrorHandler {
     public ValidationResult handleException(Exception e, String parent) {
-        String parentInfo = String.format("Validation error at object: \"%s\". ", parent);
+        String parentInfo = String.format("Validation error at object: %s. ", parent);
         return new ValidationResult(ValidationCode.EXCEPTION, parentInfo + e.getMessage());
     }
 }

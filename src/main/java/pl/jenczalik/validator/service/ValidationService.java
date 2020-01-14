@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.jenczalik.validator.exception.BadTypeException;
 import pl.jenczalik.validator.exception.ExcessiveObjectPresentException;
 import pl.jenczalik.validator.exception.NoMatchWithRegexException;
 import pl.jenczalik.validator.exception.RequiredObjectNotPresentException;
@@ -79,6 +80,12 @@ public class ValidationService {
 
             String type = (String) ((Map) config.get(currentKey)).get(TYPE);
 
+            try {
+                validateType(specification.get(currentKey), type);
+            } catch (BadTypeException e) {
+                throw new BadTypeException(currentKey, type, e.getBadType());
+            }
+
             if (TYPE_STRING.equals(type)) {
                 validateString((String) specification.get(currentKey), (Map) config.get(currentKey));
             } else if (TYPE_OBJECT.equals(type)) {
@@ -107,6 +114,12 @@ public class ValidationService {
             }
 
             String type = (String) arrayObjectConfigLayer.get(TYPE);
+
+            try {
+                validateType(array.get(currentKey), type);
+            } catch (BadTypeException e) {
+                throw new BadTypeException(currentKey, type, e.getBadType());
+            }
 
             if (TYPE_STRING.equals(type)) {
                 validateString((String) array.get(currentKey), config);
@@ -137,6 +150,25 @@ public class ValidationService {
     private void validateByRegex(String value, String regex) {
         if(!value.matches(regex)) {
             throw new NoMatchWithRegexException(value, regex);
+        }
+    }
+
+    private void validateType(Object object, String type) {
+        switch (type) {
+            case TYPE_STRING:
+                validateType(object, String.class);
+                break;
+
+            case TYPE_OBJECT:
+            case TYPE_ARRAY:
+                validateType(object, Map.class);
+                break;
+        }
+    }
+
+    private void validateType(Object object, Class clazz) {
+        if(!clazz.isInstance(object)) {
+            throw new BadTypeException(object.getClass());
         }
     }
 
