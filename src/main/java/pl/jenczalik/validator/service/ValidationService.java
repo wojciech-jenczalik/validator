@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.jenczalik.validator.exception.ExcessiveObjectPresentException;
+import pl.jenczalik.validator.exception.NoMatchWithRegexException;
 import pl.jenczalik.validator.exception.RequiredObjectNotPresentException;
 import pl.jenczalik.validator.util.error.ValidationErrorHandler;
 import pl.jenczalik.validator.util.parser.YamlParser;
@@ -29,6 +30,8 @@ public class ValidationService {
     private static final String TYPE_ARRAY = "array";
 
     private static final String CHILDREN = "children";
+    private static final String VALUE_REGEX = "valueRegex";
+    private static final String NAME_REGEX = "nameRegex";
 
     private static final Logger logger = LoggerFactory.getLogger(ValidationService.class);
     private final YamlParser yamlParser;
@@ -51,11 +54,11 @@ public class ValidationService {
         try {
             Map<String, ?> specification = this.yamlParser.parseYamlString(yamlSpecification);
 
-            logger.info("");
             logger.info("Validation started");
+
             validateObject(specification, specificationConfig);
+
             logger.info("Validation ended");
-            logger.info("");
 
             return ValidationResult.ok();
         } catch (Exception e) {
@@ -63,7 +66,7 @@ public class ValidationService {
         }
     }
 
-    private void validateObject(Map<String, ?> specification, Map<String, ?> config) {
+    private void validateObject(Map specification, Map config) {
         Set<String> requiredFields = fetchRequiredFields(config);
         Set<String> allowedFields = fetchAllowedFields(config);
         Set<String> specificationKeys = specification.keySet();
@@ -79,30 +82,38 @@ public class ValidationService {
             if (TYPE_STRING.equals(type)) {
                 validateString((String) specification.get(currentKey), (Map) config.get(currentKey));
             } else if (TYPE_OBJECT.equals(type)) {
-                validateObject((Map<String, ?>) specification.get(currentKey), (Map<String, ?>) ((Map) config.get(currentKey)).get(CHILDREN));
+                validateObject((Map) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
             } else if (TYPE_ARRAY.equals(type)) {
-                validateArray((Map<String, ?>) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
+                validateArray((Map) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
             }
         }
     }
 
     private void validateString(String string, Map config) {
-
+        if(config.get(VALUE_REGEX) != null) {
+            validateByRegex(string, (String) config.get(VALUE_REGEX));
+        }
     }
 
     private void validateArray(Map<String, ?> array, Map config) {
         for (String currentKey : array.keySet()) {
             logger.info(String.format("Array: %s", currentKey));
 
-            Map configTempLayer = (Map) config.get(config.keySet().iterator().next());
+            //TODO: move it one level above?
+            Map arrayObjectConfigLayer = (Map) config.get(config.keySet().iterator().next());
 
-            String type = (String) configTempLayer.get(TYPE);
-            if (TYPE_OBJECT.equals(type)) {
-                validateObject((Map<String, ?>) array.get(currentKey), (Map<String, ?>) configTempLayer.get(CHILDREN));
-            } else if (TYPE_STRING.equals(type)) {
+            if(arrayObjectConfigLayer.get(NAME_REGEX) != null) {
+                validateByRegex(currentKey, (String) arrayObjectConfigLayer.get(NAME_REGEX));
+            }
+
+            String type = (String) arrayObjectConfigLayer.get(TYPE);
+
+            if (TYPE_STRING.equals(type)) {
                 validateString((String) array.get(currentKey), config);
+            } else if (TYPE_OBJECT.equals(type)) {
+                validateObject((Map) array.get(currentKey), (Map) arrayObjectConfigLayer.get(CHILDREN));
             } else if (TYPE_ARRAY.equals(type)) {
-                validateArray((Map<String, ?>) array.get(currentKey), (Map<String, ?>) configTempLayer.get(CHILDREN));
+                validateArray((Map) array.get(currentKey), (Map) arrayObjectConfigLayer.get(CHILDREN));
             }
         }
     }
@@ -120,6 +131,12 @@ public class ValidationService {
             if(!allowedFields.contains(field)) {
                 throw new ExcessiveObjectPresentException(field);
             }
+        }
+    }
+
+    private void validateByRegex(String value, String regex) {
+        if(!value.matches(regex)) {
+            throw new NoMatchWithRegexException(value, regex);
         }
     }
 
