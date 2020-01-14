@@ -44,9 +44,9 @@ info:
       type: string
 paths:
   required: true
-  type: object
+  type: array
   children:
-    ^path:
+    path:
       required: true
       type: object
       nameRegex: TODO@@@
@@ -64,9 +64,9 @@ paths:
               type: string
             parameters:
               required: false
-              type: object
+              type: array
               children:
-                ^parameter:
+                parameter:
                   required: true
                   type: object
                   allowNameDuplicates: false
