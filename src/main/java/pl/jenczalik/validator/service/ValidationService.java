@@ -18,10 +18,14 @@ import pl.jenczalik.validator.config.Config;
 import pl.jenczalik.validator.model.ValidationResult;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ValidationService {
@@ -62,6 +66,9 @@ public class ValidationService {
 
             crawlHelper.setWorking(true);
             crawlHelper.setLayersAndParent(specification, specificationConfig, ROOT);
+            Set<String> keyStorage = new LinkedHashSet<>();
+            Set<String> usedKeyStorage = new LinkedHashSet<>();
+            Iterator arrayObjectsIterator = null;
 
             while(crawlHelper.isWorking()) {
                 Map<String, Map<String, ?>> specificationLayer = crawlHelper.getCurrentSpecificationLayer();
@@ -73,24 +80,30 @@ public class ValidationService {
                 validateForMandatoryPresence(configObjects, specificationObjects);
                 validateForNoExcessivePresence(configObjects, specificationObjects);
 
-                Set<String> keySet = specification.keySet();
-                Iterator<String> keyIterator = keySet.iterator();
+                keyStorage.addAll(configLayer.keySet());
+                keyStorage.removeAll(usedKeyStorage);
+
+                Iterator<String> keyIterator = keyStorage.iterator();
                 String currentParent = crawlHelper.getCurrentParent();
                 Map currentSpecificationLayer = crawlHelper.getCurrentSpecificationLayer();
                 Map currentConfigLayer = crawlHelper.getCurrectConfigLayer();
                 String nextParent = "";
+                String keyPlaceholder = "";
 
                 boolean shouldGetNext = false;
                 boolean noMoreParentsInLayer = false;
 
                 while(keyIterator.hasNext()) {
                     String key = keyIterator.next();
-                    if(shouldGetNext == false && (currentParent.equals(ROOT) || key.equals(currentParent))) {
+                    if(key.startsWith("^") || (!shouldGetNext && (currentParent.equals(ROOT) || key.equals(currentParent)))) {
                         shouldGetNext = true;
                     }
                     if(shouldGetNext) {
-                        if(currentSpecificationLayer.get(key) instanceof Map &&
-                            currentConfigLayer.get(key) instanceof Map) {
+                        if(key.startsWith("^") || (currentSpecificationLayer.get(key) instanceof Map &&
+                            currentConfigLayer.get(key) instanceof Map)) {
+                            if(!nextParent.equals(key)) {
+                                arrayObjectsIterator = currentSpecificationLayer.keySet().iterator();
+                            }
                             nextParent = key;
                             break;
                         }
@@ -106,18 +119,27 @@ public class ValidationService {
                         crawlHelper.setWorking(false);
                     } else {
                         crawlHelper.removeLastLayersAndParent();
+                        usedKeyStorage.add(currentParent);
                     }
                 } else {
-                    Map<String, ?> nextSpecificationLayer = specificationLayer.get(nextParent);
-                    Map<String, ?> nextConfigLayer = configLayer.get(nextParent);
-                    crawlHelper.setLayersAndParent(nextSpecificationLayer, nextConfigLayer, nextParent);
+                    if(nextParent.startsWith("^")) {
+                        Map<String, ?> nextSpecificationLayer = specificationLayer.get(arrayObjectsIterator.next());
+                        Map<String, ?> nextConfigLayer = (Map<String, ?>) configLayer.get(nextParent).get("children");
+                        crawlHelper.setLayersAndParent(nextSpecificationLayer, nextConfigLayer, nextParent);
+                    }else {
+                        Map<String, ?> nextSpecificationLayer = specificationLayer.get(nextParent);
+                        Map<String, ?> nextConfigLayer = (Map<String, ?>) configLayer.get(nextParent).get("children");
+                        crawlHelper.setLayersAndParent(nextSpecificationLayer, nextConfigLayer, nextParent);
+                    }
                 }
             }
             validationResult = ValidationResult.ok();
 
         } catch (Exception e) {
-            validationResult = this.errorHandler.handleException(e);
+            validationResult = this.errorHandler.handleException(e, crawlHelper.getCurrentParent());
         }
+
+        crawlHelper.reset();
 
         return validationResult;
     }
@@ -125,7 +147,9 @@ public class ValidationService {
     private void validateForMandatoryPresence(List<ConfigObject> configObjects, List<SpecificationObject> specificationObjects) {
         for(ConfigObject configObject : configObjects) {
             if (configObject.isRequired()) {
-                if (specificationObjects.stream().noneMatch(specObj -> specObj.getKey().equals(configObject.getName()))) {
+                if(configObject.getName().startsWith("^")){
+                    //...
+                } else if (specificationObjects.stream().noneMatch(specObj -> specObj.getKey().equals(configObject.getName()))) {
                     throw new RequiredObjectNotPresentException(configObject.getName());
                 }
             }
@@ -133,10 +157,18 @@ public class ValidationService {
     }
 
     private void validateForNoExcessivePresence(List<ConfigObject> configObjects, List<SpecificationObject> specificationObjects) {
-        for(SpecificationObject specificationObject : specificationObjects) {
-            if(configObjects.stream().map(ConfigObject::getName).noneMatch(cfgObjName -> cfgObjName.equals(specificationObject.getKey()))) {
-                throw new ExcessiveObjectPresentException(specificationObject.getKey());
+        if (configObjects.stream().map(ConfigObject::getName).collect(Collectors.toList()).stream().anyMatch(name -> name.startsWith("^"))) {
+            //..
+        } else {
+            for (SpecificationObject specificationObject : specificationObjects) {
+                if (configObjects.stream().map(ConfigObject::getName).noneMatch(cfgObjName -> cfgObjName.equals(specificationObject.getKey()))) {
+                    throw new ExcessiveObjectPresentException(specificationObject.getKey());
+                }
             }
         }
+    }
+
+    private void validateType(List<ConfigObject> configObjects, List<SpecificationObject> specificationObjects) {
+
     }
 }

@@ -50,4 +50,11 @@ public class CrawlHelper {
         specificationConfigLayers.remove(configLayersSize - 1);
         parents.remove(parentsSize - 1);
     }
+
+    public void reset() {
+        this.parents.clear();
+        this.specificationLayers.clear();
+        this.specificationConfigLayers.clear();
+        this.isWorking = false;
+    }
 }

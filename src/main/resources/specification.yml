@@ -1,7 +1,7 @@
 coapi:
   required: true
   type: string
-
+  regex: none
 info:
   required: true
   type: object
@@ -28,6 +28,7 @@ info:
         email:
           required: false
           type: string
+          valueRegex: TODO@@@
     licence:
       required: false
       type: object
@@ -41,3 +42,45 @@ info:
     version:
       required: true
       type: string
+paths:
+  required: true
+  type: object
+  children:
+    ^path:
+      required: true
+      type: object
+      nameRegex: TODO@@@
+      allowNameDuplicates: false
+      children:
+        description:
+          required: false
+          type: string
+        get:
+          required: false
+          type: object
+          children:
+            description:
+              required: false
+              type: string
+            parameters:
+              required: false
+              type: object
+              children:
+                ^parameter:
+                  required: true
+                  type: object
+                  allowNameDuplicates: false
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    allowEmptyValue:
+                      required: false
+                      type: boolean
+                    isRequired:
+                      required: false
+                      type: boolean
+#        post:
+#        put:
+#        delete:
+#        observe:
