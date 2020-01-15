@@ -5,10 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.jenczalik.validator.exception.BadNumberFormatException;
 import pl.jenczalik.validator.exception.BadTypeException;
 import pl.jenczalik.validator.exception.ExcessiveObjectPresentException;
 import pl.jenczalik.validator.exception.NoMatchWithRegexException;
 import pl.jenczalik.validator.exception.NullValueException;
+import pl.jenczalik.validator.exception.NumberTooLargeException;
 import pl.jenczalik.validator.exception.RequiredObjectNotPresentException;
 import pl.jenczalik.validator.util.error.ValidationErrorHandler;
 import pl.jenczalik.validator.util.parser.YamlParser;
@@ -31,9 +33,11 @@ public class ValidationService {
     private static final String TYPE = "type";
     private static final String REQUIRED = "required";
 
-    private static final String TYPE_STRING = "string";
     private static final String TYPE_OBJECT = "object";
     private static final String TYPE_ARRAY = "array";
+    private static final String TYPE_STRING = "string";
+    private static final String TYPE_INTEGER = "integer";
+    private static final String TYPE_UNSIGNED_INTEGER = "unsignedInteger";
     private static final String TYPE_BOOLEAN = "boolean";
 
     private static final String CHILDREN = "children";
@@ -163,12 +167,34 @@ public class ValidationService {
     private void validatePrimitive(String value, Map config, String type) {
         if (TYPE_STRING.equals(type)) {
             validateString(value, config);
+        } else if (TYPE_INTEGER.equals(type)) {
+            validateInteger(value);
+        } else if (TYPE_UNSIGNED_INTEGER.equals(type)) {
+            validateUnsignedInteger(value);
         }
     }
 
     private void validateString(String string, Map config) {
         if(config.get(VALUE_REGEX) != null) {
             validateByRegex(string, (String) config.get(VALUE_REGEX));
+        }
+    }
+
+    private void validateInteger(String value) {
+        try {
+            long number = Long.parseLong(value);
+            if(number > Integer.MAX_VALUE) {
+                throw new NumberTooLargeException(value, TYPE_INTEGER);
+            }
+        } catch (NumberFormatException e) {
+            throw new BadNumberFormatException(value, TYPE_INTEGER);
+        }
+    }
+    
+    private void validateUnsignedInteger(String value) {
+        validateInteger(value);
+        if(Integer.parseInt(value) < 0) {
+            throw new BadNumberFormatException(value, TYPE_UNSIGNED_INTEGER);
         }
     }
 

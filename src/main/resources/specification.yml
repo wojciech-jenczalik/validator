@@ -41,6 +41,9 @@ info:
     version:
       required: true
       type: string
+    coapVersion:
+      required: true
+      type: string
 paths:
   required: true
   type: array
@@ -83,6 +86,9 @@ paths:
                     deprecated:
                       required: false
                       type: boolean
+            size1:
+              required: false
+              type: unsignedInteger
             requestBody:
               required: false
               type: object
@@ -148,6 +154,9 @@ paths:
                     deprecated:
                       required: false
                       type: boolean
+            size1:
+              required: false
+              type: unsignedInteger
             requestBody:
               required: false
               type: object
@@ -213,6 +222,9 @@ paths:
                     deprecated:
                       required: false
                       type: boolean
+            size1:
+              required: false
+              type: unsignedInteger
             requestBody:
               required: false
               type: object
@@ -278,6 +290,9 @@ paths:
                     deprecated:
                       required: false
                       type: boolean
+            size1:
+              required: false
+              type: unsignedInteger
             requestBody:
               required: false
               type: object
@@ -343,6 +358,9 @@ paths:
                     deprecated:
                       required: false
                       type: boolean
+            size1:
+              required: false
+              type: unsignedInteger
             requestBody:
               required: false
               type: object
