@@ -161,20 +161,6 @@ paths:
                                     value:
                                       required: true
                                       type: string
-                    options:
-                      required: false
-                      type: array
-                      children:
-                        option:
-                          required: true
-                          type: object
-                          children:
-                            description:
-                              required: false
-                              type: string
-                            required:
-                              required: false
-                              type: boolean
         put:
           required: false
           type: object
@@ -280,20 +266,6 @@ paths:
                                     value:
                                       required: true
                                       type: string
-                    options:
-                      required: false
-                      type: array
-                      children:
-                        option:
-                          required: true
-                          type: object
-                          children:
-                            description:
-                              required: false
-                              type: string
-                            required:
-                              required: false
-                              type: boolean
         post:
           required: false
           type: object
@@ -399,20 +371,6 @@ paths:
                                     value:
                                       required: true
                                       type: string
-                    options:
-                      required: false
-                      type: array
-                      children:
-                        option:
-                          required: true
-                          type: object
-                          children:
-                            description:
-                              required: false
-                              type: string
-                            required:
-                              required: false
-                              type: boolean
         delete:
           required: false
           type: object
@@ -518,20 +476,6 @@ paths:
                                     value:
                                       required: true
                                       type: string
-                    options:
-                      required: false
-                      type: array
-                      children:
-                        option:
-                          required: true
-                          type: object
-                          children:
-                            description:
-                              required: false
-                              type: string
-                            required:
-                              required: false
-                              type: boolean
         observe:
           required: false
           type: object
@@ -637,17 +581,3 @@ paths:
                                     value:
                                       required: true
                                       type: string
-                    options:
-                      required: false
-                      type: array
-                      children:
-                        option:
-                          required: true
-                          type: object
-                          children:
-                            description:
-                              required: false
-                              type: string
-                            required:
-                              required: false
-                              type: boolean
