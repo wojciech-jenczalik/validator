@@ -124,6 +124,57 @@ paths:
                 required:
                   required: true
                   type: boolean
+            responses:
+              required: false
+              type: array
+              children:
+                response:
+                  required: true
+                  type: object
+                  nameRegex: ([245]\.\d\d)|(default)
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    content:
+                      required: true
+                      type: array
+                      children:
+                        mediaType:
+                          required: true
+                          type: object
+                          children:
+                            schema:
+                              required: false
+                              type: string
+                            examples:
+                              required: false
+                              type: array
+                              children:
+                                name:
+                                  required: false
+                                  type: object
+                                  children:
+                                    description:
+                                      required: false
+                                      type: string
+                                    value:
+                                      required: true
+                                      type: string
+                    options:
+                      required: false
+                      type: array
+                      children:
+                        option:
+                          required: true
+                          type: object
+                          children:
+                            description:
+                              required: false
+                              type: string
+                            required:
+                              required: false
+                              type: boolean
         put:
           required: false
           type: object
@@ -192,6 +243,57 @@ paths:
                 required:
                   required: true
                   type: boolean
+            responses:
+              required: false
+              type: array
+              children:
+                response:
+                  required: true
+                  type: object
+                  nameRegex: ([245]\.\d\d)|(default)
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    content:
+                      required: true
+                      type: array
+                      children:
+                        mediaType:
+                          required: true
+                          type: object
+                          children:
+                            schema:
+                              required: false
+                              type: string
+                            examples:
+                              required: false
+                              type: array
+                              children:
+                                name:
+                                  required: false
+                                  type: object
+                                  children:
+                                    description:
+                                      required: false
+                                      type: string
+                                    value:
+                                      required: true
+                                      type: string
+                    options:
+                      required: false
+                      type: array
+                      children:
+                        option:
+                          required: true
+                          type: object
+                          children:
+                            description:
+                              required: false
+                              type: string
+                            required:
+                              required: false
+                              type: boolean
         post:
           required: false
           type: object
@@ -260,6 +362,57 @@ paths:
                 required:
                   required: true
                   type: boolean
+            responses:
+              required: false
+              type: array
+              children:
+                response:
+                  required: true
+                  type: object
+                  nameRegex: ([245]\.\d\d)|(default)
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    content:
+                      required: true
+                      type: array
+                      children:
+                        mediaType:
+                          required: true
+                          type: object
+                          children:
+                            schema:
+                              required: false
+                              type: string
+                            examples:
+                              required: false
+                              type: array
+                              children:
+                                name:
+                                  required: false
+                                  type: object
+                                  children:
+                                    description:
+                                      required: false
+                                      type: string
+                                    value:
+                                      required: true
+                                      type: string
+                    options:
+                      required: false
+                      type: array
+                      children:
+                        option:
+                          required: true
+                          type: object
+                          children:
+                            description:
+                              required: false
+                              type: string
+                            required:
+                              required: false
+                              type: boolean
         delete:
           required: false
           type: object
@@ -328,6 +481,57 @@ paths:
                 required:
                   required: true
                   type: boolean
+            responses:
+              required: false
+              type: array
+              children:
+                response:
+                  required: true
+                  type: object
+                  nameRegex: ([245]\.\d\d)|(default)
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    content:
+                      required: true
+                      type: array
+                      children:
+                        mediaType:
+                          required: true
+                          type: object
+                          children:
+                            schema:
+                              required: false
+                              type: string
+                            examples:
+                              required: false
+                              type: array
+                              children:
+                                name:
+                                  required: false
+                                  type: object
+                                  children:
+                                    description:
+                                      required: false
+                                      type: string
+                                    value:
+                                      required: true
+                                      type: string
+                    options:
+                      required: false
+                      type: array
+                      children:
+                        option:
+                          required: true
+                          type: object
+                          children:
+                            description:
+                              required: false
+                              type: string
+                            required:
+                              required: false
+                              type: boolean
         observe:
           required: false
           type: object
@@ -396,3 +600,54 @@ paths:
                 required:
                   required: true
                   type: boolean
+            responses:
+              required: false
+              type: array
+              children:
+                response:
+                  required: true
+                  type: object
+                  nameRegex: ([245]\.\d\d)|(default)
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    content:
+                      required: true
+                      type: array
+                      children:
+                        mediaType:
+                          required: true
+                          type: object
+                          children:
+                            schema:
+                              required: false
+                              type: string
+                            examples:
+                              required: false
+                              type: array
+                              children:
+                                name:
+                                  required: false
+                                  type: object
+                                  children:
+                                    description:
+                                      required: false
+                                      type: string
+                                    value:
+                                      required: true
+                                      type: string
+                    options:
+                      required: false
+                      type: array
+                      children:
+                        option:
+                          required: true
+                          type: object
+                          children:
+                            description:
+                              required: false
+                              type: string
+                            required:
+                              required: false
+                              type: boolean

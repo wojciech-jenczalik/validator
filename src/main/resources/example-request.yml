@@ -10,6 +10,7 @@ info:
     name: MIT License
     url: mit.edu/license.md
   version: 1.0-SNAPSHOT
+  coapVersion: 1
 paths:
   /lamps:
     description: Lamps endpoint - allowing to get current state of lamps.
@@ -33,6 +34,7 @@ paths:
     put:
       description: Turns on/off the lamp.
       operationId: 7bec44f8-1ef0-42a0-ad32-a03f47ecd4bc
+      size1: 30
       requestBody:
         description: Contains desired state of the lamp.
         content:
@@ -49,6 +51,28 @@ paths:
                 description: Example of turning the lamp off by YAML request.
                 value: "state: 0"
         required: true
+      responses:
+        default:
+          description: A default response.
+          content:
+            json:
+              schema: JSON Schema 2019-09
+              examples:
+                JSONexample:
+                  value: "{state: 1}"
+          options:
+            4:
+              description: ETag
+            60:
+              description: Size1
+        4.04:
+          description: Not found.
+          content:
+            text/plain:
+              schema: none
+              examples:
+                textPlainExample:
+                  value: "Unable to find a lamp of given ID."
     delete:
       description: Removes given lamp from an API.
       operationId: e44fc8bf-f1d0-4960-93f3-ad2a198d1c40
