@@ -192,7 +192,14 @@ public class ValidationService {
     }
     
     private void validateUnsignedInteger(String value) {
-        validateInteger(value);
+        try {
+            long number = Long.parseLong(value);
+            if(number > Integer.MAX_VALUE) {
+                throw new NumberTooLargeException(value, TYPE_UNSIGNED_INTEGER);
+            }
+        } catch (NumberFormatException e) {
+            throw new BadNumberFormatException(value, TYPE_UNSIGNED_INTEGER);
+        }
         if(Integer.parseInt(value) < 0) {
             throw new BadNumberFormatException(value, TYPE_UNSIGNED_INTEGER);
         }
