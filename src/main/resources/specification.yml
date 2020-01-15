@@ -60,6 +60,9 @@ paths:
             description:
               required: false
               type: string
+            operationId:
+              required: false
+              type: string
             parameters:
               required: false
               type: array
@@ -74,10 +77,304 @@ paths:
                     allowEmptyValue:
                       required: true
                       type: boolean
-                    isRequired:
+                    required:
                       required: true
                       type: boolean
-#        post:
-#        put:
-#        delete:
-#        observe:
+                    deprecated:
+                      required: false
+                      type: boolean
+            requestBody:
+              required: false
+              type: object
+              children:
+                description:
+                  required: false
+                  type: string
+                content:
+                  required: true
+                  type: array
+                  children:
+                    mediaType:
+                      required: true
+                      type: object
+                      children:
+                        schema:
+                          required: false
+                          type: string
+                        examples:
+                          required: false
+                          type: array
+                          children:
+                            name:
+                              required: false
+                              type: object
+                              children:
+                                description:
+                                  required: false
+                                  type: string
+                                value:
+                                  required: true
+                                  type: string
+                required:
+                  required: true
+                  type: boolean
+        put:
+          required: false
+          type: object
+          children:
+            description:
+              required: false
+              type: string
+            operationId:
+              required: false
+              type: string
+            parameters:
+              required: false
+              type: array
+              children:
+                parameter:
+                  required: true
+                  type: object
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    allowEmptyValue:
+                      required: true
+                      type: boolean
+                    required:
+                      required: true
+                      type: boolean
+                    deprecated:
+                      required: false
+                      type: boolean
+            requestBody:
+              required: false
+              type: object
+              children:
+                description:
+                  required: false
+                  type: string
+                content:
+                  required: true
+                  type: array
+                  children:
+                    mediaType:
+                      required: true
+                      type: object
+                      children:
+                        schema:
+                          required: false
+                          type: string
+                        examples:
+                          required: false
+                          type: array
+                          children:
+                            name:
+                              required: false
+                              type: object
+                              children:
+                                description:
+                                  required: false
+                                  type: string
+                                value:
+                                  required: true
+                                  type: string
+                required:
+                  required: true
+                  type: boolean
+        post:
+          required: false
+          type: object
+          children:
+            description:
+              required: false
+              type: string
+            operationId:
+              required: false
+              type: string
+            parameters:
+              required: false
+              type: array
+              children:
+                parameter:
+                  required: true
+                  type: object
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    allowEmptyValue:
+                      required: true
+                      type: boolean
+                    required:
+                      required: true
+                      type: boolean
+                    deprecated:
+                      required: false
+                      type: boolean
+            requestBody:
+              required: false
+              type: object
+              children:
+                description:
+                  required: false
+                  type: string
+                content:
+                  required: true
+                  type: array
+                  children:
+                    mediaType:
+                      required: true
+                      type: object
+                      children:
+                        schema:
+                          required: false
+                          type: string
+                        examples:
+                          required: false
+                          type: array
+                          children:
+                            name:
+                              required: false
+                              type: object
+                              children:
+                                description:
+                                  required: false
+                                  type: string
+                                value:
+                                  required: true
+                                  type: string
+                required:
+                  required: true
+                  type: boolean
+        delete:
+          required: false
+          type: object
+          children:
+            description:
+              required: false
+              type: string
+            operationId:
+              required: false
+              type: string
+            parameters:
+              required: false
+              type: array
+              children:
+                parameter:
+                  required: true
+                  type: object
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    allowEmptyValue:
+                      required: true
+                      type: boolean
+                    required:
+                      required: true
+                      type: boolean
+                    deprecated:
+                      required: false
+                      type: boolean
+            requestBody:
+              required: false
+              type: object
+              children:
+                description:
+                  required: false
+                  type: string
+                content:
+                  required: true
+                  type: array
+                  children:
+                    mediaType:
+                      required: true
+                      type: object
+                      children:
+                        schema:
+                          required: false
+                          type: string
+                        examples:
+                          required: false
+                          type: array
+                          children:
+                            name:
+                              required: false
+                              type: object
+                              children:
+                                description:
+                                  required: false
+                                  type: string
+                                value:
+                                  required: true
+                                  type: string
+                required:
+                  required: true
+                  type: boolean
+        observe:
+          required: false
+          type: object
+          children:
+            description:
+              required: false
+              type: string
+            operationId:
+              required: false
+              type: string
+            parameters:
+              required: false
+              type: array
+              children:
+                parameter:
+                  required: true
+                  type: object
+                  children:
+                    description:
+                      required: false
+                      type: string
+                    allowEmptyValue:
+                      required: true
+                      type: boolean
+                    required:
+                      required: true
+                      type: boolean
+                    deprecated:
+                      required: false
+                      type: boolean
+            requestBody:
+              required: false
+              type: object
+              children:
+                description:
+                  required: false
+                  type: string
+                content:
+                  required: true
+                  type: array
+                  children:
+                    mediaType:
+                      required: true
+                      type: object
+                      children:
+                        schema:
+                          required: false
+                          type: string
+                        examples:
+                          required: false
+                          type: array
+                          children:
+                            name:
+                              required: false
+                              type: object
+                              children:
+                                description:
+                                  required: false
+                                  type: string
+                                value:
+                                  required: true
+                                  type: string
+                required:
+                  required: true
+                  type: boolean

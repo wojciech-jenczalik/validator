@@ -127,7 +127,7 @@ public class ValidationService {
             Map arrayObjectConfigLayer = (Map) config.get(config.keySet().iterator().next());
 
             validateForNull(array, currentKey);
-            
+
             if(arrayObjectConfigLayer.get(NAME_REGEX) != null) {
                 validateByRegex(currentKey, (String) arrayObjectConfigLayer.get(NAME_REGEX));
             }
