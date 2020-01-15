@@ -8,6 +8,7 @@ public class BadTypeException extends RuntimeException {
 
     public BadTypeException(Class type) {
         super();
+
         this.badType = type.getTypeName();
     }
 

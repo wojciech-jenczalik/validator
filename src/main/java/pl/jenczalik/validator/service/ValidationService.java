@@ -29,10 +29,14 @@ public class ValidationService {
     private static final String TYPE_STRING = "string";
     private static final String TYPE_OBJECT = "object";
     private static final String TYPE_ARRAY = "array";
+    private static final String TYPE_BOOLEAN = "boolean";
 
     private static final String CHILDREN = "children";
     private static final String VALUE_REGEX = "valueRegex";
     private static final String NAME_REGEX = "nameRegex";
+
+    private static final String TRUE = "true";
+    private static final String FALSE = "false";
 
     private static final Logger logger = LoggerFactory.getLogger(ValidationService.class);
     private final YamlParser yamlParser;
@@ -86,13 +90,27 @@ public class ValidationService {
                 throw new BadTypeException(currentKey, type, e.getBadType());
             }
 
-            if (TYPE_STRING.equals(type)) {
-                validateString((String) specification.get(currentKey), (Map) config.get(currentKey));
-            } else if (TYPE_OBJECT.equals(type)) {
-                validateObject((Map) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
-            } else if (TYPE_ARRAY.equals(type)) {
-                validateArray((Map) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
+            switch (type) {
+                case TYPE_OBJECT:
+                    validateObject((Map) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
+                    break;
+
+                case TYPE_ARRAY:
+                    validateArray((Map) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
+                    break;
+
+                default:
+                    validatePrimitive((String) specification.get(currentKey), (Map) config.get(currentKey), type);
+                    break;
             }
+        }
+    }
+
+    private void validatePrimitive(String value, Map config, String type) {
+        switch (type) {
+            case TYPE_STRING:
+                validateString(value, config);
+                break;
         }
     }
 
@@ -118,15 +136,22 @@ public class ValidationService {
             try {
                 validateType(array.get(currentKey), type);
             } catch (BadTypeException e) {
+                if(String.class.equals(e.getBadType()))
                 throw new BadTypeException(currentKey, type, e.getBadType());
             }
 
-            if (TYPE_STRING.equals(type)) {
-                validateString((String) array.get(currentKey), config);
-            } else if (TYPE_OBJECT.equals(type)) {
-                validateObject((Map) array.get(currentKey), (Map) arrayObjectConfigLayer.get(CHILDREN));
-            } else if (TYPE_ARRAY.equals(type)) {
-                validateArray((Map) array.get(currentKey), (Map) arrayObjectConfigLayer.get(CHILDREN));
+            switch (type) {
+                case TYPE_OBJECT:
+                    validateObject((Map) array.get(currentKey), (Map) arrayObjectConfigLayer.get(CHILDREN));
+                    break;
+
+                case TYPE_ARRAY:
+                    validateArray((Map) array.get(currentKey), (Map) arrayObjectConfigLayer.get(CHILDREN));
+                    break;
+
+                default:
+                    validatePrimitive((String) array.get(currentKey), config, type);
+                    break;
             }
         }
     }
@@ -159,6 +184,10 @@ public class ValidationService {
                 validateType(object, String.class);
                 break;
 
+            case TYPE_BOOLEAN:
+                validateType(object, Boolean.class);
+                break;
+
             case TYPE_OBJECT:
             case TYPE_ARRAY:
                 validateType(object, Map.class);
@@ -167,14 +196,19 @@ public class ValidationService {
     }
 
     private void validateType(Object object, Class clazz) {
-        if(!clazz.isInstance(object)) {
+        if(Boolean.class.equals(clazz)) {
+            String string = object.toString();
+            if(!TRUE.equalsIgnoreCase(string) && !FALSE.equalsIgnoreCase(string)) {
+                throw new BadTypeException(object.getClass());
+            }
+        } else if(!clazz.isInstance(object)) {
             throw new BadTypeException(object.getClass());
         }
     }
 
     private Set<String> fetchRequiredFields(Map<String, ?> config) {
         return config.entrySet().stream()
-                .filter(entry -> ((Map) entry.getValue()).get(REQUIRED).equals("true"))
+                .filter(entry -> TRUE.equals(((Map) entry.getValue()).get(REQUIRED)))
                 .map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
