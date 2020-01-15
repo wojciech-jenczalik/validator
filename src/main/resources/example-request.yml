@@ -1,0 +1,57 @@
+coapi: '1.0'
+info:
+  title: Example IoT API
+  description: Example for PDI2. API contains some IoT endpoints representing hardware.
+  contact:
+    name: Wojtek Jenczalik
+    url: example.homepage.pl
+    email: jenczalik@pw.edu.pl
+  licence:
+    name: MIT License
+    url: mit.edu/license.md
+  version: 1.0-SNAPSHOT
+paths:
+  /lamps:
+    description: Lamps endpoint - allowing to get current state of lamps.
+    get:
+      description: Get state of lamps.
+      operationId: 0d9d7484-e059-4977-9715-a7eb2a0fb949
+      parameters:
+        limit:
+          description: Limits number of records.
+          allowEmptyValue: false
+          required: true
+        skip:
+          description: Skips given amount of records, indexed from 0.
+          allowEmptyValue: false
+          required: false
+  /lamps/{lampId}:
+    description: Endpoint allowing to turn on/off given lamp or get its current state.
+    get:
+      description: Get state of given lamp.
+      operationId: c13aa6e5-b5b3-41aa-8447-39cf18ca16a1
+    put:
+      description: Turns on/off the lamp.
+      operationId: 7bec44f8-1ef0-42a0-ad32-a03f47ecd4bc
+      requestBody:
+        description: Contains desired state of the lamp.
+        content:
+          json:
+            schema: JSON Schema 2019-09
+            examples:
+              JSONexample:
+                description: Example of turning the lamp on by JSON request.
+                value: "{state: 1}"
+          yaml:
+            schema: YAML Schema
+            examples:
+              YAMLExample:
+                description: Example of turning the lamp off by YAML request.
+                value: "state: 0"
+        required: true
+    delete:
+      description: Removes given lamp from an API.
+      operationId: e44fc8bf-f1d0-4960-93f3-ad2a198d1c40
+    observe:
+      description: Subscribes to the state of given lamp.
+      operationId: a6617fe5-fd84-4c70-b365-a75ee2094294
