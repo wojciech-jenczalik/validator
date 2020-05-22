@@ -1,6 +1,20 @@
 coapi:
   required: true
   type: string
+servers:
+  required: true
+  type: array
+  children:
+    url:
+      required: true
+      type: object
+      children:
+        description:
+          required: false
+          type: string
+        port:
+          required: false
+          type: unsignedInteger
 info:
   required: true
   type: object
@@ -55,7 +69,7 @@ paths:
       children:
         description:
           required: false
-          type: string
+          type: stringa
         get:
           required: false
           type: object
@@ -63,32 +77,15 @@ paths:
             description:
               required: false
               type: string
-            operationId:
-              required: false
-              type: string
-            parameters:
-              required: false
-              type: array
-              children:
-                parameter:
-                  required: true
-                  type: object
-                  children:
-                    description:
-                      required: false
-                      type: string
-                    allowEmptyValue:
-                      required: true
-                      type: boolean
-                    required:
-                      required: true
-                      type: boolean
-                    deprecated:
-                      required: false
-                      type: boolean
             size1:
               required: false
               type: unsignedInteger
+            etag:
+              required: false
+              type: boolean
+            observable:
+              required: false
+              type: boolean
             requestBody:
               required: false
               type: object
@@ -100,7 +97,7 @@ paths:
                   required: true
                   type: array
                   children:
-                    mediaType:
+                    contentFormat:
                       required: true
                       type: object
                       children:
@@ -140,7 +137,7 @@ paths:
                       required: true
                       type: array
                       children:
-                        mediaType:
+                        contentFormat:
                           required: true
                           type: object
                           children:
@@ -168,29 +165,6 @@ paths:
             description:
               required: false
               type: string
-            operationId:
-              required: false
-              type: string
-            parameters:
-              required: false
-              type: array
-              children:
-                parameter:
-                  required: true
-                  type: object
-                  children:
-                    description:
-                      required: false
-                      type: string
-                    allowEmptyValue:
-                      required: true
-                      type: boolean
-                    required:
-                      required: true
-                      type: boolean
-                    deprecated:
-                      required: false
-                      type: boolean
             size1:
               required: false
               type: unsignedInteger
@@ -205,7 +179,7 @@ paths:
                   required: true
                   type: array
                   children:
-                    mediaType:
+                    contentFormat:
                       required: true
                       type: object
                       children:
@@ -245,7 +219,7 @@ paths:
                       required: true
                       type: array
                       children:
-                        mediaType:
+                        contentFormat:
                           required: true
                           type: object
                           children:
@@ -273,29 +247,6 @@ paths:
             description:
               required: false
               type: string
-            operationId:
-              required: false
-              type: string
-            parameters:
-              required: false
-              type: array
-              children:
-                parameter:
-                  required: true
-                  type: object
-                  children:
-                    description:
-                      required: false
-                      type: string
-                    allowEmptyValue:
-                      required: true
-                      type: boolean
-                    required:
-                      required: true
-                      type: boolean
-                    deprecated:
-                      required: false
-                      type: boolean
             size1:
               required: false
               type: unsignedInteger
@@ -310,7 +261,7 @@ paths:
                   required: true
                   type: array
                   children:
-                    mediaType:
+                    contentFormat:
                       required: true
                       type: object
                       children:
@@ -350,7 +301,7 @@ paths:
                       required: true
                       type: array
                       children:
-                        mediaType:
+                        contentFormat:
                           required: true
                           type: object
                           children:
@@ -378,29 +329,6 @@ paths:
             description:
               required: false
               type: string
-            operationId:
-              required: false
-              type: string
-            parameters:
-              required: false
-              type: array
-              children:
-                parameter:
-                  required: true
-                  type: object
-                  children:
-                    description:
-                      required: false
-                      type: string
-                    allowEmptyValue:
-                      required: true
-                      type: boolean
-                    required:
-                      required: true
-                      type: boolean
-                    deprecated:
-                      required: false
-                      type: boolean
             size1:
               required: false
               type: unsignedInteger
@@ -415,7 +343,7 @@ paths:
                   required: true
                   type: array
                   children:
-                    mediaType:
+                    contentFormat:
                       required: true
                       type: object
                       children:
@@ -455,112 +383,7 @@ paths:
                       required: true
                       type: array
                       children:
-                        mediaType:
-                          required: true
-                          type: object
-                          children:
-                            schema:
-                              required: false
-                              type: string
-                            examples:
-                              required: false
-                              type: array
-                              children:
-                                name:
-                                  required: false
-                                  type: object
-                                  children:
-                                    description:
-                                      required: false
-                                      type: string
-                                    value:
-                                      required: true
-                                      type: string
-        observe:
-          required: false
-          type: object
-          children:
-            description:
-              required: false
-              type: string
-            operationId:
-              required: false
-              type: string
-            parameters:
-              required: false
-              type: array
-              children:
-                parameter:
-                  required: true
-                  type: object
-                  children:
-                    description:
-                      required: false
-                      type: string
-                    allowEmptyValue:
-                      required: true
-                      type: boolean
-                    required:
-                      required: true
-                      type: boolean
-                    deprecated:
-                      required: false
-                      type: boolean
-            size1:
-              required: false
-              type: unsignedInteger
-            requestBody:
-              required: false
-              type: object
-              children:
-                description:
-                  required: false
-                  type: string
-                content:
-                  required: true
-                  type: array
-                  children:
-                    mediaType:
-                      required: true
-                      type: object
-                      children:
-                        schema:
-                          required: false
-                          type: string
-                        examples:
-                          required: false
-                          type: array
-                          children:
-                            name:
-                              required: false
-                              type: object
-                              children:
-                                description:
-                                  required: false
-                                  type: string
-                                value:
-                                  required: true
-                                  type: string
-                required:
-                  required: true
-                  type: boolean
-            responses:
-              required: false
-              type: array
-              children:
-                response:
-                  required: true
-                  type: object
-                  nameRegex: ([245]\.\d\d)|(default)
-                  children:
-                    description:
-                      required: false
-                      type: string
-                    content:
-                      required: true
-                      type: array
-                      children:
-                        mediaType:
+                        contentFormat:
                           required: true
                           type: object
                           children:

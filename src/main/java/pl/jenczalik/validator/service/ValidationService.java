@@ -127,10 +127,9 @@ public class ValidationService {
         for (String currentKey : array.keySet()) {
             logger.info(String.format("Array: %s", currentKey));
 
-            //TODO: move it one level above?
             Map arrayObjectConfigLayer = (Map) config.get(config.keySet().iterator().next());
 
-            validateForNull(array, currentKey);
+            validateForNull(array, currentKey); // TODO What if array has only not-required fields? Could allow null probably
 
             if(arrayObjectConfigLayer.get(NAME_REGEX) != null) {
                 validateByRegex(currentKey, (String) arrayObjectConfigLayer.get(NAME_REGEX));
