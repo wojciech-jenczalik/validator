@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.jenczalik.validator.model.ValidationResult;
 import pl.jenczalik.validator.service.ValidationService;
 
+/**
+ * Kontroler obsługujący żądania HTTP, których zawartością jest definicja API
+ * do zwalidowania.
+ */
 @RestController
 @RequestMapping(value = "/validation")
 public class ValidationController {
@@ -18,9 +22,15 @@ public class ValidationController {
         this.validationService = validationService;
     }
 
+    /**
+     * Metoda służy do walidacji, czy definicja API spełnia syntaktyczne założenia specyfikacji Coapi.
+     *
+     * @param yamlApiDefinition Definicja API w formacie YAML, stworzona w języku opisu Coapi.
+     * @return Wynik walidacji. Jeśli nie zakończyła się sukcesem, to określa gdzie znajduje się błąd.
+     */
     @PostMapping
-    public ResponseEntity validate(@RequestBody String yamlSpecification) {
-        ValidationResult result = this.validationService.validate(yamlSpecification);
+    public ResponseEntity validate(@RequestBody String yamlApiDefinition) {
+        ValidationResult result = this.validationService.validate(yamlApiDefinition);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

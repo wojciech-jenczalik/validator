@@ -2,6 +2,9 @@ package pl.jenczalik.validator.exception;
 
 import lombok.Getter;
 
+/**
+ * Wyjątek rzucany w przypadku złego typu obiektu.
+ */
 public class BadTypeException extends RuntimeException {
     @Getter
     private String badType;

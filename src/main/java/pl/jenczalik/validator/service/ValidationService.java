@@ -65,13 +65,13 @@ public class ValidationService {
         this.parents = new ArrayList<>();
     }
 
-    public ValidationResult validate(String yamlSpecification) {
+    public ValidationResult validate(String yamlApiDefinition) {
 
         try {
-            Map<String, ?> specification = this.yamlParser.parseYamlString(yamlSpecification);
+            Map<String, ?> apiDefinition = this.yamlParser.parseYamlString(yamlApiDefinition);
 
             logger.info("Validation started");
-            validateObject(specification, specificationConfig);
+            validateObject(apiDefinition, specificationConfig);
             logger.info("Validation ended");
 
             return ValidationResult.ok();
@@ -83,23 +83,23 @@ public class ValidationService {
         }
     }
 
-    private void validateObject(Map specification, Map config) {
+    private void validateObject(Map apiDefinition, Map config) {
         Set<String> requiredFields = fetchRequiredFields(config);
         Set<String> allowedFields = fetchAllowedFields(config);
-        Set<String> specificationKeys = specification.keySet();
+        Set<String> apiDefinitionKeys = apiDefinition.keySet();
 
-        validateForRequiredFields(specificationKeys, requiredFields);
-        validateForExcessiveFields(specificationKeys, allowedFields);
+        validateForRequiredFields(apiDefinitionKeys, requiredFields);
+        validateForExcessiveFields(apiDefinitionKeys, allowedFields);
 
-        for (String currentKey : specificationKeys) {
+        for (String currentKey : apiDefinitionKeys) {
             logger.info(String.format("Object: %s", currentKey));
 
             String type = (String) ((Map) config.get(currentKey)).get(TYPE);
 
-            validateForNull(specification, currentKey);
+            validateForNull(apiDefinition, currentKey);
 
             try {
-                validateType(specification.get(currentKey), type);
+                validateType(apiDefinition.get(currentKey), type);
             } catch (BadTypeException e) {
                 throw new BadTypeException(currentKey, type, e.getBadType());
             }
@@ -107,16 +107,16 @@ public class ValidationService {
             switch (type) {
                 case TYPE_OBJECT:
                     parents.add(currentKey);
-                    validateObject((Map) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
+                    validateObject((Map) apiDefinition.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
                     break;
 
                 case TYPE_ARRAY:
                     parents.add(currentKey);
-                    validateArray((Map) specification.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
+                    validateArray((Map) apiDefinition.get(currentKey), (Map) ((Map) config.get(currentKey)).get(CHILDREN));
                     break;
 
                 default:
-                    validatePrimitive((String) specification.get(currentKey), (Map) config.get(currentKey), type);
+                    validatePrimitive((String) apiDefinition.get(currentKey), (Map) config.get(currentKey), type);
                     break;
             }
             parents.remove(currentKey);
