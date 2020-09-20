@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Klasa, której przeznaczeniem jest walidacja prymitywów, tablic i obiektów,
+ * pod kątem zgodności z syntaktycznym modelem języka.
+ */
 @Service
 public class ValidationService {
 
@@ -65,6 +69,17 @@ public class ValidationService {
         this.parents = new ArrayList<>();
     }
 
+    /**
+     * Metoda wywoływana z kontrolera, w celu walidacji poprawności definicji API.
+     * <p>
+     * W trakcie walidacji śledzone jest, w którym miejscu definicji prowadzona jest
+     * aktualnie walidacja, dzięki czemu w przypadku wykrycia błędu, pokazywana jest
+     * ścieżka do miejsca w którym wystąpił błąd.
+     *
+     * @param yamlApiDefinition Definicja API
+     * @return Rezultat walidacji
+     * @see ValidationService#validateObject(Map, Map) Metoda wywoływana przez tę metodę.
+     */
     public ValidationResult validate(String yamlApiDefinition) {
 
         try {
@@ -83,6 +98,33 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji obiektu w definicji API w oparciu o model języka.
+     * <p>
+     * Walidacja obiektu polega na sprawdzeniu, czy obecne są wymagane pola, czy nie ma
+     * pól nadmiarowych, czy typy reprezentowane przez pola są zgodne z modelem, oraz
+     * czy wartością obiektu nie jest null.
+     * <p>
+     * Następnie, w zależności od typu obiektów-dzieci, jest wywoływana jedna z trzech metod -
+     * <p><ul>
+     * <li>Walidacja obiektu
+     * <li>Walidacja tablicy
+     * <li>Walidacja prymitywu
+     * </ul><p>
+     *
+     * @param apiDefinition Definicja API
+     * @param config Model języka
+     *
+     * @throws BadTypeException Wyjątek rzucany w przypadku złego typu obiektu-dziecka
+     *
+     * @see ValidationService#validateForRequiredFields(Set, Set) Wywołanie metody walidującej obowiązkowe pola
+     * @see ValidationService#validateForExcessiveFields(Set, Set) Wywołanie metody walidującej nadmiarowe pola
+     * @see ValidationService#validateForNull(Map, String) Wywołanie metody walidującej wartości null
+     * @see ValidationService#validateType(Object, String) Wywołanie metody walidującej zgodność typu
+     * @see ValidationService#validateObject(Map, Map) Rekurencyjne wywołanie metody walidującej obiekt
+     * @see ValidationService#validateArray(Map, Map) Rekurencyjne wywołanie metody walidującej tablicę
+     * @see ValidationService#validatePrimitive(String, Map, String) Wywołanie metody walidującej prymityw
+     */
     private void validateObject(Map apiDefinition, Map config) {
         Set<String> requiredFields = fetchRequiredFields(config);
         Set<String> allowedFields = fetchAllowedFields(config);
@@ -123,6 +165,32 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji tablicy w definicji API w oparciu o model języka.
+     * <p>
+     * Walidacja tablicy polega na sprawdzeniu, czy wartością tablicy nie jest null,
+     * czy nazwy pól tablicy są zgodne z wyrażeniem regularnym które powinny spełniać,
+     * czy typy reprezentowane przez pola są zgodne z modelem.
+     * <p>
+     * Następnie, w zależności od typu obiektów-dzieci, jest wywoływana jedna z trzech metod -
+     * <p><ul>
+     * <li>Walidacja obiektu
+     * <li>Walidacja tablicy
+     * <li>Walidacja prymitywu
+     * </ul><p>
+     *
+     * @param array Tablica
+     * @param config Model języka
+     *
+     * @throws BadTypeException Wyjątek rzucany w przypadku złego typu obiektu - elementu tablicy
+     *
+     * @see ValidationService#validateForNull(Map, String) Wywołanie metody walidującej wartości null
+     * @see ValidationService#validateType(Object, String) Wywołanie metody walidującej zgodność typu
+     * @see ValidationService#validateByRegex(String, String) Wywołanie metody walidującej zgodność z wyrażeniem regularnym
+     * @see ValidationService#validateObject(Map, Map) Rekurencyjne wywołanie metody walidującej obiekt
+     * @see ValidationService#validateArray(Map, Map) Rekurencyjne wywołanie metody walidującej tablicę
+     * @see ValidationService#validatePrimitive(String, Map, String) Wywołanie metody walidującej prymityw
+     */
     private void validateArray(Map<String, ?> array, Map config) {
         for (String currentKey : array.keySet()) {
             logger.info(String.format("Array: %s", currentKey));
@@ -140,7 +208,7 @@ public class ValidationService {
             try {
                 validateType(array.get(currentKey), type);
             } catch (BadTypeException e) {
-                if(String.class.equals(e.getBadType()))
+                if(String.class.toString().equals(e.getBadType())) // TODO works?
                 throw new BadTypeException(currentKey, type, e.getBadType());
             }
 
@@ -163,6 +231,19 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji prymitywu w definicji API w oparciu o model języka.
+     * <p>
+     * Walidacja prymitywu polega na sprawdzeniu, czy jego wartość zgodna jest
+     * z typem który go definiuje.
+     *
+     * @param value Wartość prymitywu
+     * @param config Model języka
+     *               
+     * @see ValidationService#validateString(String, Map) Wywołanie metody walidującej string
+     * @see ValidationService#validateInteger(String) Wywołanie metody walidującej integer
+     * @see ValidationService#validateUnsignedInteger(String) Wywołanie metody walidującej unsigned integer
+     */
     private void validatePrimitive(String value, Map config, String type) {
         if (TYPE_STRING.equals(type)) {
             validateString(value, config);
@@ -173,12 +254,34 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji stringa
+     * <p>
+     * Walidacja stringa polega na sprawdzeniu, czy jego wartość spełnia wymagania
+     * wyrażenia regularnego, o ile takie występuje.
+     *
+     * @param string String
+     * @param config Model języka
+     *
+     * @see ValidationService#validateByRegex(String, String) Wywołanie metody walidującej wyrażenie regularne
+     */
     private void validateString(String string, Map config) {
         if(config.get(VALUE_REGEX) != null) {
             validateByRegex(string, (String) config.get(VALUE_REGEX));
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji integera.
+     * <p>
+     * Walidacja integera polega na sprawdzeniu, czy nie jest on zbyt wielki,
+     * oraz czy spełnia format liczbowy.
+     *
+     * @param value Integer
+     *
+     * @throws NumberTooLargeException Wyjątek rzucany w przypadku, gdy liczba jest zbyt wielka
+     * @throws BadNumberFormatException Wyjątek rzucany w przypadku, gdy zadany integer nie ma formatu liczbowego
+     */
     private void validateInteger(String value) {
         try {
             long number = Long.parseLong(value);
@@ -189,7 +292,19 @@ public class ValidationService {
             throw new BadNumberFormatException(value, TYPE_INTEGER);
         }
     }
-    
+
+    /**
+     * Metoda wywoływana w celu walidacji unsigned integera.
+     * <p>
+     * Walidacja integera polega na sprawdzeniu, czy nie jest on zbyt wielki,
+     * czy spełnia format liczbowy, oraz czy nie jest zbyt wielki.
+     *
+     * @param value Unsigned integer
+     *
+     * @throws NumberTooLargeException Wyjątek rzucany w przypadku, gdy liczba jest zbyt wielka
+     * @throws BadNumberFormatException Wyjątek rzucany w przypadku, gdy liczba nie spełnia
+     * formatu liczbowego, lub gdy jest mniejsza od zera
+     */
     private void validateUnsignedInteger(String value) {
         try {
             long number = Long.parseLong(value);
@@ -204,6 +319,14 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji zbioru pól pod kątem ich wymaganej obecności.
+
+     * @param fields Pola
+     * @param requiredFields Wymagane pola
+     *
+     * @throws RequiredObjectNotPresentException Wyjątek rzucany w przypadku, gdy brakuje wymaganego obiektu
+     */
     private void validateForRequiredFields(Set<String> fields, Set<String> requiredFields) {
         for(String requiredField : requiredFields) {
             if (!fields.contains(requiredField)) {
@@ -212,6 +335,14 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji zbioru pod kątem pól pod kątem nadmiarowej ich liczby.
+     *
+     * @param fields Pola
+     * @param allowedFields Dozwolone pola
+     *
+     * @throws ExcessiveObjectPresentException Wyjątek rzucany w przypadku, gdy obecne jest nadmiarowe pole
+     */
     private void validateForExcessiveFields(Set<String> fields, Set<String> allowedFields) {
         for(String field: fields) {
             if(!allowedFields.contains(field)) {
@@ -220,18 +351,42 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji wartości w oparciu o wyrażenie regularne.
+     * 
+     * @param value Wartość
+     * @param regex Wyrażenie regularne
+     *              
+     * @throws NoMatchWithRegexException Wyjątek rzucany w przypadku, gdy wartość nie spełnia reguły wyrażenia regularnego
+     */
     private void validateByRegex(String value, String regex) {
         if(!value.matches(regex)) {
             throw new NoMatchWithRegexException(value, regex);
         }
     }
 
-    private void validateForNull(Map specification, String key) {
-        if(specification.get(key) == null) {
+    /**
+     * Metoda wywoływana w celu walidacji, czy wartość jest nullem
+     *
+     * @param apiDefinition Wycinek definicji API
+     * @param key Klucz do walidowanej wartości
+     *
+     * @throws NullValueException Wyjątek rzucany w przypadku, gdy pod kluczem kryje się wartość null
+     */
+    private void validateForNull(Map apiDefinition, String key) {
+        if(apiDefinition.get(key) == null) {
             throw new NullValueException(key);
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji, czy typ obiektu jest zgodny z deklarowanym.
+     *
+     * @param object Walidowany obiekt
+     * @param type Deklarowany typ
+     *
+     * @see ValidationService#validateType(Object, Class) Wywołanie metody walidującą zgodność obiektu z konkretnym typem
+     */
     private void validateType(Object object, String type) {
         switch (type) {
             case TYPE_STRING:
@@ -249,6 +404,14 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Metoda wywoływana w celu walidacji, czy typ obiektu jest zgodny z konkretnym typem.
+     *
+     * @param object Walidowany obiekt
+     * @param clazz Konkretny typ
+     *
+     * @throws BadTypeException Wyjątek rzucany w przypadku, gdy typ obiektu nie jest zgodny z konkretnym typem
+     */
     private void validateType(Object object, Class clazz) {
         if(Boolean.class.equals(clazz)) {
             String string = object.toString();
@@ -260,12 +423,24 @@ public class ValidationService {
         }
     }
 
+    /**
+     * Pomocnicza metoda wyciągająca zbiór wymaganych pól ze specyfikacji modelu języka.
+     *
+     * @param config Specyfikacja modelu języka
+     * @return Zbiór wymaganych pól
+     */
     private Set<String> fetchRequiredFields(Map<String, ?> config) {
         return config.entrySet().stream()
                 .filter(entry -> TRUE.equals(((Map) entry.getValue()).get(REQUIRED)))
                 .map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
+    /**
+     * Pomocnicza metoda wyciągająca zbiór dozwolonych pól ze specyfikacji modelu języka.
+     *
+     * @param config Specyfikacja modelu języka
+     * @return Zbiór dozwolonych pól
+     */
     private Set<String> fetchAllowedFields(Map<String, ?> config) {
         return new HashSet<>(config.keySet());
     }
