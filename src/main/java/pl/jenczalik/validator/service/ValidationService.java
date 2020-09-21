@@ -118,11 +118,17 @@ public class ValidationService {
      * @throws BadTypeException Wyjątek rzucany w przypadku złego typu obiektu-dziecka
      *
      * @see ValidationService#validateForRequiredFields(Set, Set) Wywołanie metody walidującej obowiązkowe pola
+     * <p>
      * @see ValidationService#validateForExcessiveFields(Set, Set) Wywołanie metody walidującej nadmiarowe pola
+     * <p>
      * @see ValidationService#validateForNull(Map, String) Wywołanie metody walidującej wartości null
+     * <p>
      * @see ValidationService#validateType(Object, String) Wywołanie metody walidującej zgodność typu
+     * <p>
      * @see ValidationService#validateObject(Map, Map) Rekurencyjne wywołanie metody walidującej obiekt
+     * <p>
      * @see ValidationService#validateArray(Map, Map) Rekurencyjne wywołanie metody walidującej tablicę
+     * <p>
      * @see ValidationService#validatePrimitive(String, Map, String) Wywołanie metody walidującej prymityw
      */
     private void validateObject(Map apiDefinition, Map config) {
@@ -185,10 +191,15 @@ public class ValidationService {
      * @throws BadTypeException Wyjątek rzucany w przypadku złego typu obiektu - elementu tablicy
      *
      * @see ValidationService#validateForNull(Map, String) Wywołanie metody walidującej wartości null
+     * <p>
      * @see ValidationService#validateType(Object, String) Wywołanie metody walidującej zgodność typu
+     * <p>
      * @see ValidationService#validateByRegex(String, String) Wywołanie metody walidującej zgodność z wyrażeniem regularnym
+     * <p>
      * @see ValidationService#validateObject(Map, Map) Rekurencyjne wywołanie metody walidującej obiekt
+     * <p>
      * @see ValidationService#validateArray(Map, Map) Rekurencyjne wywołanie metody walidującej tablicę
+     * <p>
      * @see ValidationService#validatePrimitive(String, Map, String) Wywołanie metody walidującej prymityw
      */
     private void validateArray(Map<String, ?> array, Map config) {
@@ -241,7 +252,9 @@ public class ValidationService {
      * @param config Model języka
      *               
      * @see ValidationService#validateString(String, Map) Wywołanie metody walidującej string
+     * <p>
      * @see ValidationService#validateInteger(String) Wywołanie metody walidującej integer
+     * <p>
      * @see ValidationService#validateUnsignedInteger(String) Wywołanie metody walidującej unsigned integer
      */
     private void validatePrimitive(String value, Map config, String type) {
